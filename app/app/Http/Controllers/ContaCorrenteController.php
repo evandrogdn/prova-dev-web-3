@@ -13,9 +13,20 @@ class ContaCorrenteController extends Controller
      * @author Evandro Gardolin
      * @since 17-09-2019
      */
-    public function index() 
+    public function find() 
     {
         return CC::all();
+    }
+
+    /**
+     * Retorna um registro específico que foi consultado
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function findOne(CC $contaCorrente)
+    {
+        return $contaCorrente;
     }
 }
 
