@@ -28,6 +28,19 @@ class ContaCorrenteController extends Controller
     {
         return $contaCorrente;
     }
+
+    /**
+     * Cadastra uma conta corrente apartir de dados fornecidos
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function create(Request $request)
+    {
+        $contaCorrente = CC::create($request->all);
+
+        return response()->json($contaCorrente, 201);
+    }
 }
 
 ?>
