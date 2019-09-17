@@ -89,7 +89,7 @@ class ContaCorrenteController extends Controller
         // Faz "backup" da conta
         $contaCorrenteNova = $contaCorrente;
         // Atualiza o valor de saldo da conta corrente
-        $contaCorrenteNova->conta_corrente_saldo += Input::get("valor");
+        $contaCorrenteNova->conta_corrente_saldo += $request->input("valor");
         // Atualiza o objeto Conta Corrente
         $contaCorrente->update($contaCorrenteNova);
         // @TODO - Implementar registro de movimentação da conta corrente
@@ -109,19 +109,51 @@ class ContaCorrenteController extends Controller
         // Busca a conta corrente na qual será realizado o saque
         $contaCorrente = CC::findOrFail($id);
         // Verifica se existe saldo para realizar o saque
-        if ($contaCorrente->conta_corrente_saldo < Input::get('valor')){
+        if ($contaCorrente->conta_corrente_saldo < $request->input('valor')){
             return response()->json($contaCorrente, 304);
         }
         // Faz backup da conta corrente
         $contaCorrenteNova = $contaCorrente;
         // Atualiza o valor de saldo
-        $contaCorrenteNova->conta_corrente_saldo -= Input::get('valor');
+        $contaCorrenteNova->conta_corrente_saldo -= $request->input("valor");
         // Atualiza os dados da conta corrente
         $contaCorrente->update($contaCorrenteNova);
         // @TODO = Implementar registro de movimento de conta corrente
 
         // Retorno visual
         return response()->json($contaCorrenteNova, 200);
+    }
+
+    /**
+     * Método que realiza transferência entre duas contas
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function transfer(Request $request)
+    {
+        // Busca conta de origem
+        $contaCorrenteOrigem = CC::findOrFail($request->input("conta_origem_id"));
+        // Valida saldo da conta de origem para realizar a transferencia
+        if ($contaCorrenteOrigem->conta_corrente_saldo < $request->input('valor')){
+            return response()->json(null, 304);
+        }
+        // Busca conta de destino
+        $contaCorrenteDestino = CC::findOrFail($request->input("conta_destino_id"));
+
+        // @TODO - Implementar movimento de caixa...
+
+        // Faz "backup" e atualiza a conta de destino
+        $contaDestinoAux = $contaCorreteDestino;
+        $contaDestinoAux->conta_corrente_saldo += $request->input("valor");
+        $contaCorrenteDestino->update($contaDestinoAux);
+
+        // Faz "backup" e atualiza a conta de origem
+        $contaOrigemAux = $contaCorrenteOrigem;
+        $contaOrigemAux->conta_corrente_saldo -= $request->input("valor");
+        $contaCorrenteOrigem->update($contaOrigemAux);
+
+        return response()->json(null, 200);
     }
 }
 
