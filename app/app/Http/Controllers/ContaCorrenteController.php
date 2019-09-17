@@ -97,6 +97,32 @@ class ContaCorrenteController extends Controller
         // Retorno "visual"
         return response()->json($contaCorrenteNova, 200);
     }
+
+    /**
+     * Realiza saque na conta corrente existente
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function withdraw(Request $request, $id)
+    {
+        // Busca a conta corrente na qual será realizado o saque
+        $contaCorrente = CC::findOrFail($id);
+        // Verifica se existe saldo para realizar o saque
+        if ($contaCorrente->conta_corrente_saldo < Input::get('valor')){
+            return response()->json($contaCorrente, 304);
+        }
+        // Faz backup da conta corrente
+        $contaCorrenteNova = $contaCorrente;
+        // Atualiza o valor de saldo
+        $contaCorrenteNova->conta_corrente_saldo -= Input::get('valor');
+        // Atualiza os dados da conta corrente
+        $contaCorrente->update($contaCorrenteNova);
+        // @TODO = Implementar registro de movimento de conta corrente
+
+        // Retorno visual
+        return response()->json($contaCorrenteNova, 200);
+    }
 }
 
 ?>
