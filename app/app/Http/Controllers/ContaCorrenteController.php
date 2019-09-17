@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Input as Input;
 use Illuminate\Http\Request as Request;
 use App\ContaCorrente as CC;
 
@@ -73,7 +74,28 @@ class ContaCorrenteController extends Controller
         $contaCorrente->delete();
         // Retorno "visual"
         return response()->json(null, 204);
+    }
 
+    /**
+     * Realiza deposito na conta corrente existente
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function deposit(Request $request, $id)
+    {
+        // Busca pela conta corrente na qual será realizado o deposito
+        $contaCorrente = CC::findOrFail($id);
+        // Faz "backup" da conta
+        $contaCorrenteNova = $contaCorrente;
+        // Atualiza o valor de saldo da conta corrente
+        $contaCorrenteNova->conta_corrente_saldo += Input::get("valor");
+        // Atualiza o objeto Conta Corrente
+        $contaCorrente->update($contaCorrenteNova);
+        // @TODO - Implementar registro de movimentação da conta corrente
+
+        // Retorno "visual"
+        return response()->json($contaCorrenteNova, 200);
     }
 }
 
