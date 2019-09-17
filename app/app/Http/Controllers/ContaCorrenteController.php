@@ -58,6 +58,23 @@ class ContaCorrenteController extends Controller
         // Retorno "visual"
         return response()->json($contaCorrente, 200);
     }
+
+    /**
+     * Remove conta corrente a partir de um ID fornecido
+     * 
+     * @author Evandro Gardolin
+     * @since 17-09-2019
+     */
+    public function delete(Request $request, $id)
+    {
+        // Busca por conta corrente com o ID fornecido
+        $contaCorrente = CC::findOrFail($id);
+        // Deleta a conta
+        $contaCorrente->delete();
+        // Retorno "visual"
+        return response()->json(null, 204);
+
+    }
 }
 
 ?>
