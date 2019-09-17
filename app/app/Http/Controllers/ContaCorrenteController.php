@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Input as Input;
 use Illuminate\Http\Request as Request;
 use App\ContaCorrente as CC;
+use App\ContaCorrenteMovimento as Movimento;
 
 class ContaCorrenteController extends Controller
 {
@@ -76,6 +77,16 @@ class ContaCorrenteController extends Controller
         return response()->json(null, 204);
     }
 
+    private function createMovimento($contaID, $descricao, $valor) {
+        $movimento = new Movimento();
+        $movimento->conta_id = $contaID;
+        $movimento->descricao = $descricao;
+        $movimento->valor = $valor;
+        $movimento->save();
+
+        return;
+    }
+
     /**
      * Realiza deposito na conta corrente existente
      * 
@@ -92,8 +103,8 @@ class ContaCorrenteController extends Controller
         $contaCorrenteNova->conta_corrente_saldo += $request->input("valor");
         // Atualiza o objeto Conta Corrente
         $contaCorrente->update($contaCorrenteNova);
-        // @TODO - Implementar registro de movimentação da conta corrente
-
+        // Cria registro de movimento de caixa
+        $this->createMovimento($id, "CREDITO", $request->input("valor"));
         // Retorno "visual"
         return response()->json($contaCorrenteNova, 200);
     }
@@ -118,8 +129,8 @@ class ContaCorrenteController extends Controller
         $contaCorrenteNova->conta_corrente_saldo -= $request->input("valor");
         // Atualiza os dados da conta corrente
         $contaCorrente->update($contaCorrenteNova);
-        // @TODO = Implementar registro de movimento de conta corrente
-
+        // Cria registro de movimento de caixa
+        $this->createMovimento($id, "DEBITO", $request->input("valor"));
         // Retorno visual
         return response()->json($contaCorrenteNova, 200);
     }
@@ -140,9 +151,10 @@ class ContaCorrenteController extends Controller
         }
         // Busca conta de destino
         $contaCorrenteDestino = CC::findOrFail($request->input("conta_destino_id"));
-
-        // @TODO - Implementar movimento de caixa...
-
+        // Cria registro de movimento de caixa crédito transferência
+        $this->createMovimento($id, "CREDITO TRANSFERENCIA", $request->input("valor"));
+        // Cria registro de movimento de caixa débito transferência
+        $this->createMovimento($id, "DEBITO TRANSFERENCIA", $request->input("valor"));
         // Faz "backup" e atualiza a conta de destino
         $contaDestinoAux = $contaCorreteDestino;
         $contaDestinoAux->conta_corrente_saldo += $request->input("valor");
