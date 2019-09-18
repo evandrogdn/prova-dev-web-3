@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 
+use App\Http\ContaCorrenteController;
+use App\Http\ContaCorrenteMovimentoController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +16,15 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get("conta-corrente", "ContaCorrenteController@find");
+Route::get("conta-corrente/{conta-corrente}", "ContaCorrenteController@findOne");
+Route::post("conta-corrente", "ContaCorrenteController@create");
+Route::put("conta-corrente/{conta-corrente}", "ContaCorrenteController@update");
+Route::delete("conta-corrente/{conta-corrente}", "ContaCorrenteController@delete");
+Route::post("conta-corrente/depositar", "ContaCorrenteController@deposit");
+Route::post("conta-corrente/sacar", "ContaCorrenteController@withdraw");
+Route::post("conta-corrente/transferir", "ContaCorrenteController@transfer");
+
+Route::get("movimento", "ContaCorrenteMovimentoController@find");
+Route::get("movimento/{movimento}", "ContaCorrenteMovimentoController@findOne");
+
