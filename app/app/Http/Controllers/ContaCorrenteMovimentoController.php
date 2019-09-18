@@ -25,9 +25,9 @@ class ContaCorrenteMovimentoController extends Controller
      * @author Evandro Gardolin
      * @since 17-09-2019
      */
-    public function findOne(Movimento $contaCorrente)
+    public function findOne($id)
     {
-        return $contaCorrente;
+        return Movimento::find($id);
     }
 }
 

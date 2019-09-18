@@ -17,14 +17,14 @@ use App\Http\ContaCorrenteMovimentoController;
 */
 
 Route::get("conta-corrente", "ContaCorrenteController@find");
-Route::get("conta-corrente/{conta-corrente}", "ContaCorrenteController@findOne");
+Route::get("conta-corrente/{id}", "ContaCorrenteController@findOne");
 Route::post("conta-corrente", "ContaCorrenteController@create");
-Route::put("conta-corrente/{conta-corrente}", "ContaCorrenteController@update");
-Route::delete("conta-corrente/{conta-corrente}", "ContaCorrenteController@delete");
-Route::post("conta-corrente/depositar", "ContaCorrenteController@deposit");
-Route::post("conta-corrente/sacar", "ContaCorrenteController@withdraw");
+Route::put("conta-corrente/{id}", "ContaCorrenteController@update");
+Route::delete("conta-corrente/{id}", "ContaCorrenteController@delete");
+Route::put("conta-corrente/depositar/{id}", "ContaCorrenteController@deposit");
+Route::put("conta-corrente/sacar/{id}", "ContaCorrenteController@withdraw");
 Route::post("conta-corrente/transferir", "ContaCorrenteController@transfer");
 
 Route::get("movimento", "ContaCorrenteMovimentoController@find");
-Route::get("movimento/{movimento}", "ContaCorrenteMovimentoController@findOne");
+Route::get("movimento/{id}", "ContaCorrenteMovimentoController@findOne");
 

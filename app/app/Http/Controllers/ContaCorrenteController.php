@@ -26,9 +26,9 @@ class ContaCorrenteController extends Controller
      * @author Evandro Gardolin
      * @since 17-09-2019
      */
-    public function findOne(CC $contaCorrente)
+    public function findOne($id)
     {
-        return $contaCorrente;
+        return CC::find($id);
     }
 
     /**
@@ -40,7 +40,7 @@ class ContaCorrenteController extends Controller
     public function create(Request $request)
     {
         // Realiza cadastro de conta corrente
-        $contaCorrente = CC::create($request->all);
+        $contaCorrente = CC::create($request->all());
         // Retorno "visual"
         return response()->json($contaCorrente, 201);
     }
@@ -102,7 +102,7 @@ class ContaCorrenteController extends Controller
         // Atualiza o valor de saldo da conta corrente
         $contaCorrenteNova->conta_corrente_saldo += $request->input("valor");
         // Atualiza o objeto Conta Corrente
-        $contaCorrente->update($contaCorrenteNova);
+        $contaCorrente->update(json_decode($contaCorrenteNova, true));
         // Cria registro de movimento de caixa
         $this->createMovimento($id, "CREDITO", $request->input("valor"));
         // Retorno "visual"
@@ -128,7 +128,7 @@ class ContaCorrenteController extends Controller
         // Atualiza o valor de saldo
         $contaCorrenteNova->conta_corrente_saldo -= $request->input("valor");
         // Atualiza os dados da conta corrente
-        $contaCorrente->update($contaCorrenteNova);
+        $contaCorrente->update(json_decode($contaCorrenteNova, true));
         // Cria registro de movimento de caixa
         $this->createMovimento($id, "DEBITO", $request->input("valor"));
         // Retorno visual
@@ -152,18 +152,18 @@ class ContaCorrenteController extends Controller
         // Busca conta de destino
         $contaCorrenteDestino = CC::findOrFail($request->input("conta_destino_id"));
         // Cria registro de movimento de caixa crédito transferência
-        $this->createMovimento($id, "CREDITO TRANSFERENCIA", $request->input("valor"));
+        $this->createMovimento($request->input("conta_destino_id"), "CREDITO TRANSFERENCIA", $request->input("valor"));
         // Cria registro de movimento de caixa débito transferência
-        $this->createMovimento($id, "DEBITO TRANSFERENCIA", $request->input("valor"));
+        $this->createMovimento($request->input("conta_origem_id"), "DEBITO TRANSFERENCIA", $request->input("valor"));
         // Faz "backup" e atualiza a conta de destino
-        $contaDestinoAux = $contaCorreteDestino;
+        $contaDestinoAux = $contaCorrenteDestino;
         $contaDestinoAux->conta_corrente_saldo += $request->input("valor");
-        $contaCorrenteDestino->update($contaDestinoAux);
+        $contaCorrenteDestino->update(json_decode($contaDestinoAux, true));
 
         // Faz "backup" e atualiza a conta de origem
         $contaOrigemAux = $contaCorrenteOrigem;
         $contaOrigemAux->conta_corrente_saldo -= $request->input("valor");
-        $contaCorrenteOrigem->update($contaOrigemAux);
+        $contaCorrenteOrigem->update(json_decode($contaOrigemAux, true));
 
         return response()->json(null, 200);
     }
